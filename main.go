@@ -1,8 +1,6 @@
 package main
 
 import (
-	"os"
-
 	"github.com/MohakGupta2004/auth-go/routes"
 	"github.com/MohakGupta2004/auth-go/utils/env"
 	"github.com/gin-gonic/gin"
@@ -18,6 +16,6 @@ func main() {
 	router.GET("/api/v1", func(c *gin.Context) {
 		c.JSON(200, gin.H{"success": "True"})
 	})
-
+	println("Server running on PORT", port)
 	router.Run(port)
 }

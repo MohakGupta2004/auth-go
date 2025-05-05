@@ -20,6 +20,8 @@ func DbInstance() *mongo.Client {
 	if err != nil {
 		log.Fatal("error connecting to database", err)
 	}
+
+	println("MONGO IS RUNNING")
 	return client
 }
 

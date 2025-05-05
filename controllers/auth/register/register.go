@@ -14,17 +14,19 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
+	"golang.org/x/crypto/bcrypt"
 )
 
 var userCollection *mongo.Collection = database.OpenCollection(database.Client, "user")
 var validate = validator.New()
 
-func HashPassword() {
-
-}
-
-func VerifyPassword() {
-
+func HashPassword(password string) *string {
+	pass, err := bcrypt.GenerateFromPassword([]byte(password), 10)
+	if err != nil {
+		log.Fatal("Can't able to create a hashed password")
+	}
+	hashedPassword := string(pass[:])
+	return &hashedPassword
 }
 
 func RegisterController() gin.HandlerFunc {
@@ -62,9 +64,9 @@ func RegisterController() gin.HandlerFunc {
 		user.ID = primitive.NewObjectID()
 		user.User_id = user.ID.Hex()
 		accessToken, refreshToken, _ := token.GenerateAllTokens(*user.Email, *user.Username, *user.User_type, *&user.User_id)
-		user.Access_token = accessToken
-		user.Refresh_token = refreshToken
-
+		user.Access_token = &accessToken
+		user.Refresh_token = &refreshToken
+		user.Password = HashPassword(*user.Password)
 		result, err := userCollection.InsertOne(ctx, user)
 
 		if err != nil {
