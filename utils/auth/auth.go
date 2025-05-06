@@ -2,6 +2,7 @@ package auth
 
 import (
 	"errors"
+	"log"
 
 	"github.com/gin-gonic/gin"
 )
@@ -19,7 +20,9 @@ func CheckUserType(c *gin.Context, role string) (err error) {
 }
 func MatchUserTypeToUid(c *gin.Context, userId string) (err error) {
 	userType := c.GetString("user_type")
+	log.Printf("User Type: %s", userType)
 	uid := c.GetString("uid")
+	log.Printf("User id: %s", uid)
 	err = nil
 
 	if userType == "USER" && uid != userId {
@@ -27,6 +30,10 @@ func MatchUserTypeToUid(c *gin.Context, userId string) (err error) {
 		return err
 	}
 
-	err = CheckUserType(c, userType)
+	if userType != "USER" {
+		if err := CheckUserType(c, userType); err != nil {
+			return err
+		}
+	}
 	return err
 }
